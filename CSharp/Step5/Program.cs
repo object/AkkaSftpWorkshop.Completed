@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -49,9 +50,9 @@ namespace Application
 
 			for (int fileNumber = 0; fileNumber < fileCount; fileNumber++)
 			{
-				var remotePath = "/test/12345" + "-" + roundNumber + "-" + fileNumber + ".dll";
-				sftpActor.Tell(new UploadFile("Wire.dll", remotePath));
-				sftpActor.Tell(new DownloadFile("Wire" + "-" + roundNumber + "-" + fileNumber + ".bak", remotePath));
+                var baseDir = AppDomain.CurrentDomain.BaseDirectory;
+                var remotePath = "/test/12345" + "-" + roundNumber + "-" + fileNumber + ".dll";
+				sftpActor.Tell(new UploadFile(Path.Combine(baseDir, "Wire.dll"), remotePath));
 				Console.WriteLine();
 			}
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -32,10 +33,10 @@ namespace Application
 			ColoredConsole.WriteLine(ConsoleColor.Green, "SSH.NET: Connected.");
 			ColoredConsole.WriteLine(ConsoleColor.Cyan, "SSH.NET: Checking if directory <directory name> exists...");
 			ColoredConsole.WriteLine(ConsoleColor.Green, "SSH.NET: Directory <directory name> exists.");
-			ColoredConsole.WriteLine(ConsoleColor.Cyan, "SSH.NET: Uploading file <file name>...");
-			ColoredConsole.WriteLine(ConsoleColor.Green, "SSH.NET: File <file name> is uploaded.");
-			ColoredConsole.WriteLine(ConsoleColor.Cyan, "SSH.NET: Downloading file <file name>...");
-			ColoredConsole.WriteLine(ConsoleColor.Green, "SSH.NET: File <file name> is downloaded.");
+			ColoredConsole.WriteLine(ConsoleColor.Cyan, "SSH.NET: Beginning Upload of file <file name>...");
+			ColoredConsole.WriteLine(ConsoleColor.Green, "SSH.NET: Ending upload of file <file name>.");
+			ColoredConsole.WriteLine(ConsoleColor.Cyan, "SSH.NET: Requesting cancel...");
+			ColoredConsole.WriteLine(ConsoleColor.Green, "SSH.NET: Cancel requested.");
 			Console.WriteLine("    pause for about 10 seconds");
 			ColoredConsole.WriteLine(ConsoleColor.Cyan, "SSH.NET: Disconnecting...");
 			ColoredConsole.WriteLine(ConsoleColor.Green, "SSH.NET: Disconnected.");
@@ -51,8 +52,9 @@ namespace Application
 				Props.Create(() => new SftpActor(clientFactory)),
 				"sftpActor");
 
-			var remotePath = "/test/12345.dll";
-			sftpActor.Tell(new UploadFile("Wire.dll", remotePath));
+            var baseDir = AppDomain.CurrentDomain.BaseDirectory;
+            var remotePath = "/test/12345.dll";
+			sftpActor.Tell(new UploadFile(Path.Combine(baseDir, "Wire.dll"), remotePath));
 			await Task.Delay(2000);
 			sftpActor.Tell(new Cancel(remotePath));
 			Console.WriteLine();

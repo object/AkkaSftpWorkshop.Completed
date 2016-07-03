@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -50,9 +51,10 @@ namespace Application
 				Props.Create(() => new SftpActor(clientFactory)),
 				"sftpActor");
 
+            var baseDir = AppDomain.CurrentDomain.BaseDirectory;
 			var remotePath = "/test/12345.dll";
-			sftpActor.Tell(new UploadFile("Wire.dll", remotePath));
-			sftpActor.Tell(new DownloadFile("Wire.bak", remotePath));
+			sftpActor.Tell(new UploadFile(Path.Combine(baseDir, "Wire.dll"), remotePath));
+			sftpActor.Tell(new DownloadFile(Path.Combine(baseDir, "Wire.bak"), remotePath));
 			Console.WriteLine();
 
 			Console.ReadKey();
