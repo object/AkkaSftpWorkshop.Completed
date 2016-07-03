@@ -4,8 +4,9 @@ using System.Linq;
 using Akka.Actor;
 
 using Shared;
+using Messages;
 
-namespace SftpActors
+namespace Actors
 {
 	public class SftpActor : ReceiveActor, IWithUnboundedStash
 	{
@@ -24,43 +25,6 @@ namespace SftpActors
 		}
 
 		public IStash Stash { get; set; }
-
-		public interface ISftpCommand { }
-
-		public class ListDirectory : ISftpCommand
-		{
-			public ListDirectory(string remotePath)
-			{
-				this.RemotePath = remotePath;
-			}
-
-			public string RemotePath { get; private set; }
-		}
-
-		public class UploadFile : ISftpCommand
-		{
-			public UploadFile(string localPath, string remotePath)
-			{
-				this.LocalPath = localPath;
-				this.RemotePath = remotePath;
-			}
-
-			public string LocalPath { get; private set; }
-			public string RemotePath { get; private set; }
-		}
-
-		public class DownloadFile : ISftpCommand
-		{
-			public DownloadFile(string localPath, string remotePath)
-			{
-				this.LocalPath = localPath;
-				this.RemotePath = remotePath;
-			}
-
-			public string LocalPath { get; private set; }
-			public string RemotePath { get; private set; }
-		}
-
 
 		private void Disconnected()
 		{
@@ -102,10 +66,8 @@ namespace SftpActors
 				StopIdlePeriod();
 
 				Utils.EnsureParentDirectoryExists(_connection, cmd.RemotePath);
-				using (var stream = _fileStreamProvider.OpenRead(cmd.LocalPath))
-				{
-					_connection.UploadFile(stream, cmd.RemotePath, null);
-				}
+				var stream = _fileStreamProvider.OpenRead(cmd.LocalPath);
+				_connection.UploadFile(stream, cmd.RemotePath, null);
 
 				StartIdlePeriod();
 			});
@@ -114,10 +76,8 @@ namespace SftpActors
 			{
 				StopIdlePeriod();
 
-				using (var stream = _fileStreamProvider.OpenWrite(cmd.LocalPath))
-				{
-					_connection.DownloadFile(cmd.RemotePath, stream, null);
-				}
+				var stream = _fileStreamProvider.OpenWrite(cmd.LocalPath);
+				_connection.DownloadFile(cmd.RemotePath, stream, null);
 
 				StartIdlePeriod();
 			});

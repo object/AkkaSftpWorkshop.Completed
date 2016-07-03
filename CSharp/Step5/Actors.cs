@@ -6,18 +6,20 @@ using Akka.Actor;
 using Shared;
 using Messages;
 
-namespace SftpActors
+namespace Actors
 {
 	public class SftpActor : ReceiveActor, IWithUnboundedStash
 	{
 		private IClientFactory _clientFactory;
 		private ISftpClient _connection;
+		private IFileStreamProvider _fileStreamProvider;
 		private const int ConnectionTimeoutInSeconds = 10;
 		private DateTimeOffset _idleFromTime;
 
 		public SftpActor(IClientFactory clientFactory)
 		{
 			_clientFactory = clientFactory;
+			_fileStreamProvider = _clientFactory.CreateFileStreamProvider();
 
 			Disconnected();
 		}
@@ -26,7 +28,7 @@ namespace SftpActors
 
 		private void Disconnected()
 		{
-			Receive<ListDirectory>((cmd) =>
+			Receive<ISftpCommand>((cmd) =>
 			{
 				this.Stash.Stash();
 
@@ -55,6 +57,31 @@ namespace SftpActors
 					result = new SftpFileInfo[] { };
 				}
 				this.Sender.Tell(result, Self);
+
+				StartIdlePeriod();
+			});
+
+			Receive<UploadFile>((cmd) =>
+			{
+				StopIdlePeriod();
+
+				Utils.EnsureParentDirectoryExists(_connection, cmd.RemotePath);
+				using (var stream = _fileStreamProvider.OpenRead(cmd.LocalPath))
+				{
+					_connection.UploadFile(stream, cmd.RemotePath, null);
+				}
+
+				StartIdlePeriod();
+			});
+
+			Receive<DownloadFile>((cmd) =>
+			{
+				StopIdlePeriod();
+
+				using (var stream = _fileStreamProvider.OpenWrite(cmd.LocalPath))
+				{
+					_connection.DownloadFile(cmd.RemotePath, stream, null);
+				}
 
 				StartIdlePeriod();
 			});

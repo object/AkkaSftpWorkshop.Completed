@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Akka.Actor;
 
 using Shared;
-using SftpActors;
+using Actors;
 
 namespace Application
 {

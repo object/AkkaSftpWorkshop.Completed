@@ -5,7 +5,8 @@ using System.Threading.Tasks;
 using Akka.Actor;
 
 using Shared;
-using SftpActors;
+using Messages;
+using Actors;
 
 namespace Application
 {
@@ -50,10 +51,10 @@ namespace Application
 				Props.Create(() => new SftpActor(clientFactory)),
 				"sftpActor");
 
-			var remotePath = "/123/456.dll";
-			sftpActor.Tell(new SftpActor.UploadFile("Wire.dll", remotePath));
+			var remotePath = "/test/12345.dll";
+			sftpActor.Tell(new UploadFile("Wire.dll", remotePath));
 			await Task.Delay(2000);
-			sftpActor.Tell(new SftpActor.Cancel(remotePath));
+			sftpActor.Tell(new Cancel(remotePath));
 			Console.WriteLine();
 
 			Console.ReadKey();

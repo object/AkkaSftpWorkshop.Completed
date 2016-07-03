@@ -6,7 +6,8 @@ using Akka.Actor;
 using Akka.Routing;
 
 using Shared;
-using SftpActors;
+using Messages;
+using Actors;
 
 namespace Application
 {
@@ -48,9 +49,9 @@ namespace Application
 
 			for (int fileNumber = 0; fileNumber < fileCount; fileNumber++)
 			{
-				var remotePath = "/123/456" + "-" + roundNumber + "-" + fileNumber + ".dll";
-				sftpActor.Tell(new SftpActor.UploadFile("Wire.dll", remotePath));
-				sftpActor.Tell(new SftpActor.DownloadFile("Wire" + "-" + roundNumber + "-" + fileNumber + ".bak", remotePath));
+				var remotePath = "/test/12345" + "-" + roundNumber + "-" + fileNumber + ".dll";
+				sftpActor.Tell(new UploadFile("Wire.dll", remotePath));
+				sftpActor.Tell(new DownloadFile("Wire" + "-" + roundNumber + "-" + fileNumber + ".bak", remotePath));
 				Console.WriteLine();
 			}
 

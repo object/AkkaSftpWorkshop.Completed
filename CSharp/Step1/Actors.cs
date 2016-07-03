@@ -3,7 +3,7 @@ using Akka.Actor;
 
 using Shared;
 
-namespace SftpActors
+namespace Actors
 {
 	public class SftpActor : ReceiveActor
 	{

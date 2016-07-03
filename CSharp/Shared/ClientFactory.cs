@@ -5,9 +5,12 @@ namespace Shared
 {
 	public static class ClientFactory
 	{
+		private const string FtpRoot = "sftp";
+
 		public static IClientFactory Create(int transferDelay = 0)
 		{
-			var rootDir = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "../../../../sftp"));
+			var rootDir = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), FtpRoot));
+			if (!Directory.Exists(rootDir)) Directory.CreateDirectory(rootDir);
 			return new LocalFileClientFactory(rootDir, "", transferDelay);
 		}
 	}

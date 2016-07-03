@@ -5,8 +5,9 @@ using System.Linq;
 using Akka.Actor;
 
 using Shared;
+using Messages;
 
-namespace SftpActors
+namespace Actors
 {
 	public class SftpActor : ReceiveActor, IWithUnboundedStash
 	{
@@ -27,81 +28,6 @@ namespace SftpActors
 		}
 
 		public IStash Stash { get; set; }
-
-		public static object GetHashMap(object o)
-		{
-			if (o is ListDirectory)
-				return (o as ListDirectory).RemotePath;
-			if (o is UploadFile)
-				return (o as UploadFile).RemotePath;
-			if (o is DownloadFile)
-				return (o as DownloadFile).RemotePath;
-			if (o is Cancel)
-				return (o as Cancel).Target;
-			return o;
-		}
-
-		public interface ISftpCommand { }
-
-		public class ListDirectory : ISftpCommand
-		{
-			public ListDirectory(string remotePath)
-			{
-				this.RemotePath = remotePath;
-			}
-
-			public string RemotePath { get; private set; }
-		}
-
-		public class UploadFile : ISftpCommand
-		{
-			public UploadFile(string localPath, string remotePath)
-			{
-				this.LocalPath = localPath;
-				this.RemotePath = remotePath;
-			}
-
-			public string LocalPath { get; private set; }
-			public string RemotePath { get; private set; }
-		}
-
-		public class DownloadFile : ISftpCommand
-		{
-			public DownloadFile(string localPath, string remotePath)
-			{
-				this.LocalPath = localPath;
-				this.RemotePath = remotePath;
-			}
-
-			public string LocalPath { get; private set; }
-			public string RemotePath { get; private set; }
-		}
-
-		public class Cancel : ISftpCommand
-		{
-			public Cancel(string target)
-			{
-				this.Target = target;
-			}
-
-			public string Target { get; private set; }
-		}
-
-		public interface ISftpCommandResult { }
-
-		public class Completed : ISftpCommandResult { }
-
-		public class Cancelled : ISftpCommandResult { }
-
-		public class Error : ISftpCommandResult 
-		{
-			public Error(string message)
-			{
-				this.Message = message;
-			}
-
-			public string Message { get; private set; }
-		}
 
 		private void Disconnected()
 		{

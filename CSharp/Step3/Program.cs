@@ -5,7 +5,8 @@ using System.Threading.Tasks;
 using Akka.Actor;
 
 using Shared;
-using SftpActors;
+using Messages;
+using Actors;
 
 namespace Application
 {
@@ -48,7 +49,7 @@ namespace Application
 				"sftpActor");
 
 			var remotePath = "/";
-			var result = sftpActor.Ask(new Messages.ListDirectory(remotePath)).Result as IEnumerable<SftpFileInfo>;
+			var result = sftpActor.Ask(new ListDirectory(remotePath)).Result as IEnumerable<SftpFileInfo>;
 			Console.WriteLine();
 			if (result.Any())
 			{
