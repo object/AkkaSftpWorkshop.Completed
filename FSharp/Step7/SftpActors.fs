@@ -25,7 +25,6 @@ module SftpActors
             | UploadFile (x,y) -> y.Value
             | DownloadFile (x,y) -> y.Value
             | Cancel x -> x
-            | _ -> null
         let key  = match o with
                     | :? SftpCommand as command -> getCommandHash command
                     | _ -> null
@@ -87,11 +86,8 @@ module SftpActors
                             try
                                 connection.ListDirectory(remotePath.Value, noProgressCallback) 
                                 |> List.ofSeq
-                                |> Some
                             with
-                            | ex -> 
-                                mailbox.Self <! Seq.empty
-                                None
+                            | ex -> List.empty
                         mailbox.Sender() <! result
 
                     | UploadFile (localPath, remotePath) -> 

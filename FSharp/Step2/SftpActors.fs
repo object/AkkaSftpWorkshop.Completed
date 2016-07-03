@@ -37,13 +37,10 @@ module SftpActors
                 | ListDirectory remotePath -> 
                     let result = 
                         try
-                            connection.ListDirectory(remotePath.Value, Action<int>(fun x -> ())) 
+                            connection.ListDirectory(remotePath.Value, noProgressCallback) 
                             |> List.ofSeq
-                            |> Some
                         with
-                        | ex -> 
-                            mailbox.Self <! Seq.empty
-                            None
+                        | ex -> List.empty
                     mailbox.Sender() <! result
 
                 | _ ->
