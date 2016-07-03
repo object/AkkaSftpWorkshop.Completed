@@ -28,7 +28,7 @@
         let sftp = spawn system "sftp" <| sftpActor clientFactory
 
         let localPath = UncPath @"Wire.dll"
-        let remotePath = Url "/152818/no/open/test/12345.dll"
+        let remotePath = Url "/test/12345.dll"
         sftp <! UploadFile (localPath, remotePath)
         let localPath = UncPath @"Wire.bak"
         sftp <! DownloadFile (localPath, remotePath)
