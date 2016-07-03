@@ -2,6 +2,7 @@
 using Akka.Actor;
 
 using Shared;
+using Messages;
 
 namespace Actors
 {
@@ -16,9 +17,6 @@ namespace Actors
 
 			Disconnected();
 		}
-
-		public class Connect { }
-		public class Disconnect { }
 
 		private void Disconnected()
 		{

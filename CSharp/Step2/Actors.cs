@@ -4,6 +4,7 @@ using System.Linq;
 using Akka.Actor;
 
 using Shared;
+using Messages;
 
 namespace Actors
 {
@@ -17,18 +18,6 @@ namespace Actors
 			_clientFactory = clientFactory;
 
 			Disconnected();
-		}
-
-		public class Connect { }
-		public class Disconnect { }
-		public class ListDirectory
-		{
-			public ListDirectory(string remotePath)
-			{
-				this.RemotePath = remotePath;
-			}
-
-			public string RemotePath { get; private set; }
 		}
 
 		private void Disconnected()

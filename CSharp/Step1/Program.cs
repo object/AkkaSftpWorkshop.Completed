@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Akka.Actor;
 
 using Shared;
+using Messages;
 using Actors;
 
 namespace Application
@@ -40,8 +41,8 @@ namespace Application
 				Props.Create(() => new SftpActor(clientFactory)),
 				"sftpActor");
 
-			sftpActor.Tell(new SftpActor.Connect());
-			sftpActor.Tell(new SftpActor.Disconnect());
+			sftpActor.Tell(new Connect());
+			sftpActor.Tell(new Disconnect());
 
 			Console.ReadKey();
 

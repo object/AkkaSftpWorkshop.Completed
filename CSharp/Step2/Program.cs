@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Akka.Actor;
 
 using Shared;
+using Messages;
 using Actors;
 
 namespace Application
@@ -46,9 +47,9 @@ namespace Application
 				Props.Create(() => new SftpActor(clientFactory)),
 				"sftpActor");
 
-			sftpActor.Tell(new SftpActor.Connect());
+			sftpActor.Tell(new Connect());
 			var remotePath = "/";
-			var result = await sftpActor.Ask(new SftpActor.ListDirectory(remotePath)) as IEnumerable<SftpFileInfo>;
+			var result = await sftpActor.Ask(new ListDirectory(remotePath)) as IEnumerable<SftpFileInfo>;
 			Console.WriteLine();
 			if (result.Any())
 			{
@@ -63,7 +64,7 @@ namespace Application
 			{
 				Console.WriteLine("The remote directory is empty");
 			}
-			sftpActor.Tell(new SftpActor.Disconnect());
+			sftpActor.Tell(new Disconnect());
 
 			Console.ReadKey();
 
