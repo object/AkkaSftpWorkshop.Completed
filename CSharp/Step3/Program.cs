@@ -48,7 +48,7 @@ namespace Application
 				"sftpActor");
 
 			var remotePath = "/";
-			var result = sftpActor.Ask(new SftpActor.ListDirectory(remotePath)).Result as IEnumerable<SftpFileInfo>;
+			var result = sftpActor.Ask(new Messages.ListDirectory(remotePath)).Result as IEnumerable<SftpFileInfo>;
 			Console.WriteLine();
 			if (result.Any())
 			{

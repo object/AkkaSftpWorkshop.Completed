@@ -94,12 +94,9 @@ namespace Shared
 		{
 			ColoredConsole.WriteLine(ConsoleColor.Cyan, "LocalFile: Beginning download of file {0}...", path);
 			DelayTransfer(stream);
-			using (var readStream = new FileStream(GetLocalPath(path), FileMode.Open))
-			{
-				var result = LocalAsyncResult.Create(callback);
-				ColoredConsole.WriteLine(ConsoleColor.Green, "LocalFile: File {0} is being downloaded.", path);
-				return result;
-			}
+			var result = LocalAsyncResult.Create(callback);
+			ColoredConsole.WriteLine(ConsoleColor.Green, "LocalFile: File {0} is being downloaded.", path);
+			return result;
 		}
 
 		public void EndDownloadFile(IAsyncResult ar)
@@ -123,12 +120,9 @@ namespace Shared
 		{
 			ColoredConsole.WriteLine(ConsoleColor.Cyan, "LocalFile: Beginning upload of file {0}...", path);
 			DelayTransfer(stream);
-			using (var readStream = new FileStream(GetLocalPath(path), FileMode.Open))
-			{
-				var result = LocalAsyncResult.Create(callback);
-				ColoredConsole.WriteLine(ConsoleColor.Green, "LocalFile: File {0} is being uploaded.", path);
-				return result;
-			}
+			var result = LocalAsyncResult.Create(callback);
+			ColoredConsole.WriteLine(ConsoleColor.Green, "LocalFile: File {0} is being uploaded.", path);
+			return result;
 		}
 
 		public void EndUploadFile(IAsyncResult ar)

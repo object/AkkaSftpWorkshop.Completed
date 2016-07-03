@@ -4,6 +4,7 @@ using System.Linq;
 using Akka.Actor;
 
 using Shared;
+using Messages;
 
 namespace SftpActors
 {
@@ -22,16 +23,6 @@ namespace SftpActors
 		}
 
 		public IStash Stash { get; set; }
-
-		public class ListDirectory
-		{
-			public ListDirectory(string remotePath)
-			{
-				this.RemotePath = remotePath;
-			}
-
-			public string RemotePath { get; private set; }
-		}
 
 		private void Disconnected()
 		{
