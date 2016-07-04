@@ -1,7 +1,7 @@
 ﻿module Application
 
     open System
-    open Akka
+    open Akka.Actor
     open Akka.FSharp
     open ClientFactory
 
@@ -20,18 +20,18 @@
         cprintfn ConsoleColor.Green "SSH.NET: Disconnected."
         printfn ""
 
+    let strategy () = 
+        Strategy.OneForOne((fun ex ->
+        match ex with 
+        | :? System.IO.FileNotFoundException  -> Directive.Resume
+        | :? NotSupportedException | :? NotImplementedException -> Directive.Stop
+        | _ -> Directive.Restart), 3, TimeSpan.FromSeconds(10.))
+
     let run () =
         let clientFactory = createClientFactory()
         let system = System.create "system" <| Configuration.load ()
-        let sftp = spawn system "sftp" <| sftpActor clientFactory
-
-        let remoteUrl = Url "/"
-        let result : SftpFileInfo list = (sftp <? ListDirectory remoteUrl |> Async.RunSynchronously)
-        printfn ""
-        match result with
-        | [] -> printfn "The remote directory is empty"
-        | xs -> xs |> Seq.iter (fun y -> 
-            printfn "%s: %s" (y.IsDirectory |> function | true -> "Directory" | false -> "File") y.Name)
+        let runner = spawnOpt system "runner" <| runnerActor <| [ SpawnOption.SupervisorStrategy(strategy ()) ]
+        runner <! Run clientFactory
 
     [<EntryPoint>]
     let main argv = 

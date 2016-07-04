@@ -67,3 +67,26 @@ module SftpActors
             } 
 
         disconnected ()
+
+    type RunnerCommand = 
+        | Run of IClientFactory
+
+    let runnerActor (mailbox:Actor<_>) =
+        let rec loop () =
+            actor {
+                let! message = mailbox.Receive ()
+                match message with
+                | Run clientFactory -> 
+                    let sftp = spawn mailbox.Context "sftp" <| sftpActor clientFactory
+                    let remoteUrl = Url "/"
+                    let result : SftpFileInfo list = (sftp <? ListDirectory remoteUrl |> Async.RunSynchronously)
+                    printfn ""
+                    match result with
+                    | [] -> printfn "The remote directory is empty"
+                    | xs -> xs |> Seq.iter (fun y -> 
+                        printfn "%s: %s" (y.IsDirectory |> function | true -> "Directory" | false -> "File") y.Name)
+
+                return! loop ()
+            }
+
+        loop()
