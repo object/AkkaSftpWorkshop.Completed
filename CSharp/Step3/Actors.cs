@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Akka.Actor;
 
 using Shared;
@@ -8,9 +9,60 @@ using Messages;
 
 namespace Actors
 {
-	public class SftpActor : ReceiveActor, IWithUnboundedStash
+    public class RunnerActor : UntypedActor
+    {
+        protected override void OnReceive(object message)
+        {
+            if (message is Run)
+            {
+                var sftpActor = Context.ActorOf(
+                        Props.Create(() => new SftpActor(ClientFactory.Create(0))),
+                        "sftpActor");
+
+                var remotePath = "/";
+                sftpActor.Ask(new ListDirectory(remotePath))
+                    .ContinueWith(result =>
+                    {
+                        var dirs = result.Result as IEnumerable<SftpFileInfo>;
+                        if (dirs.Any())
+                        {
+                            foreach (var entry in dirs)
+                            {
+                                Console.WriteLine("{0}: {1}",
+                                      entry.IsDirectory ? "Directory" : "File",
+                                      entry.Name);
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("The remote directory is empty");
+                        }
+                    }).PipeTo(Self);
+
+                Console.WriteLine();
+                sftpActor.Tell(PoisonPill.Instance);
+            }
+        }
+
+        protected override SupervisorStrategy SupervisorStrategy()
+        {
+            return new OneForOneStrategy(
+                3,
+                TimeSpan.FromSeconds(10),
+                x =>
+                {
+                    if (x is System.IO.FileNotFoundException) return Directive.Resume;
+                    if (x is NotSupportedException) return Directive.Stop;
+                    if (x is NotImplementedException) return Directive.Stop;
+
+                    return Directive.Restart;
+                });
+        }
+    }
+
+    public class SftpActor : ReceiveActor, IWithUnboundedStash
 	{
-		private IClientFactory _clientFactory;
+		private readonly IClientFactory _clientFactory;
 		private ISftpClient _connection;
 		private const int ConnectionTimeoutInSeconds = 10;
 		private DateTimeOffset _idleFromTime;

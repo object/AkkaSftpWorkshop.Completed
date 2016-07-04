@@ -11,9 +11,9 @@ namespace Actors
 {
 	public class SftpActor : ReceiveActor, IWithUnboundedStash
 	{
-		private IClientFactory _clientFactory;
+		private readonly IClientFactory _clientFactory;
 		private ISftpClient _connection;
-		private IFileStreamProvider _fileStreamProvider;
+		private readonly IFileStreamProvider _fileStreamProvider;
 		private IAsyncResult _asyncResult;
 		private Stream _stream;
 		private const int ConnectionTimeoutInSeconds = 10;

@@ -10,7 +10,7 @@ namespace Actors
 {
 	public class SftpActor : ReceiveActor
 	{
-		private IClientFactory _clientFactory;
+		private readonly IClientFactory _clientFactory;
 		private ISftpClient _connection;
 
 		public SftpActor(IClientFactory clientFactory)

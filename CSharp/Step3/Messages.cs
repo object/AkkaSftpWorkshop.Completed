@@ -2,7 +2,9 @@
 
 namespace Messages
 {
-	public class ListDirectory
+    public class Run { }
+
+    public class ListDirectory
 	{
 		public ListDirectory(string remotePath)
 		{

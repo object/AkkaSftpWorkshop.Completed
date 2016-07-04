@@ -39,33 +39,17 @@ namespace Application
 			Console.WriteLine();
 		}
 
-		private async static Task Run()
+		private static async Task Run()
 		{
-			var clientFactory = ClientFactory.Create();
 			var actorSystem = ActorSystem.Create("MyActorSystem");
 
-			var sftpActor = actorSystem.ActorOf(
-				Props.Create(() => new SftpActor(clientFactory)),
-				"sftpActor");
+            var runnerActor = actorSystem.ActorOf(
+                Props.Create(() => new RunnerActor()),
+                "runnerActor");
 
-			var remotePath = "/";
-			var result = sftpActor.Ask(new ListDirectory(remotePath)).Result as IEnumerable<SftpFileInfo>;
-			Console.WriteLine();
-			if (result.Any())
-			{
-				foreach (var entry in result)
-				{
-					Console.WriteLine("{0}: {1}", 
-		                  entry.IsDirectory ? "Directory" : "File", 
-		                  entry.Name);
-				}
-			}
-			else
-			{
-				Console.WriteLine("The remote directory is empty");
-			}
+            runnerActor.Tell(new Run());
 
-			Console.ReadKey();
+            Console.ReadKey();
 
 			await actorSystem.Terminate();
 		}

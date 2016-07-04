@@ -56,9 +56,9 @@ namespace Shared
 
 	public class LocalFileClient : ISftpClient, IDisposable
 	{
-		string _localRoot;
-		string _remoteRoot;
-		int _transferDelay;
+	    readonly string _localRoot;
+	    readonly string _remoteRoot;
+	    readonly int _transferDelay;
 
 		public LocalFileClient(string localRoot, string remoteRoot, int transferDelay)
 		{
@@ -273,9 +273,9 @@ namespace Shared
 
 	public class LocalFileClientFactory : IClientFactory
 	{
-		string _localRoot;
-		string _remoteRoot;
-		int _transferDelay;
+	    readonly string _localRoot;
+	    readonly string _remoteRoot;
+	    readonly int _transferDelay;
 
 		public LocalFileClientFactory(string localRoot, string remoteRoot, int transferDelay)
 		{
