@@ -59,11 +59,11 @@ module SftpActors
 
                     | UploadFile (localPath, remotePath) -> 
                         ensureParentDirectoryExists connection (remotePath.Value)
-                        let stream = fileStreamProvider.OpenRead(localPath.Value)
+                        use stream = fileStreamProvider.OpenRead(localPath.Value)
                         connection.UploadFile(stream, remotePath.Value, noProgressCallback)
 
                     | DownloadFile (localPath, remotePath) -> 
-                        let stream = fileStreamProvider.OpenWrite(localPath.Value)
+                        use stream = fileStreamProvider.OpenWrite(localPath.Value)
                         connection.DownloadFile(remotePath.Value, stream, noProgressCallback)
 
                     return! connected (connection, setReceiveTimeout ())
